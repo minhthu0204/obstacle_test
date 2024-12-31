@@ -1,10 +1,10 @@
 #include <QCoreApplication>
-#include "DisplayManager.h"
+#include "ObstacleAvoidance.h"
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-    DisplayManager displayManager;
-    displayManager.run();
+    ObstacleAvoidance obstacleAvoidance;
+    obstacleAvoidance.run();
     return a.exec();
 }

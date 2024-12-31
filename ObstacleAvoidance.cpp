@@ -1,6 +1,6 @@
-#include "DisplayManager.h"
+#include "ObstacleAvoidance.h"
 
-DisplayManager::DisplayManager()
+ObstacleAvoidance::ObstacleAvoidance()
     : device(pipelineManager.getPipeline()),
     webSocketClient(QUrl("ws://192.168.1.100:3335")){
     device.setIrLaserDotProjectorBrightness(1000);
@@ -11,7 +11,7 @@ DisplayManager::DisplayManager()
 
 }
 
-void DisplayManager::processFrame() {
+void ObstacleAvoidance::processFrame() {
 
     QThread::msleep(30);
 
@@ -31,12 +31,12 @@ void DisplayManager::processFrame() {
     cv::applyColorMap(depthFrameColor, depthFrameColor, cv::COLORMAP_HOT);
 
     auto spatialData = spatialCalcQueue->get<dai::SpatialLocationCalculatorData>()->getSpatialLocations();
-    logicManager.processSpatialData(spatialData, depthFrameColor.cols, depthFrameColor.rows);
+    MovingLogic.processSpatialData(spatialData, depthFrameColor.cols, depthFrameColor.rows);
 
     drawROIs(depthFrameColor, spatialData);
 
     // Display action decision
-    auto action = logicManager.decideAction();
+    auto action = MovingLogic.decideAction();
     //std::cout << "Action: " << action << std::endl;
     QByteArray dataBuffer = QString::fromStdString(action).toUtf8();
     webSocketClient.sendMessage(dataBuffer);
@@ -51,7 +51,7 @@ void DisplayManager::processFrame() {
     cv::imshow("depth", depthFrameColor);
 }
 
-void DisplayManager::drawROIs(cv::Mat& frame, const std::vector<dai::SpatialLocations>& spatialData) {
+void ObstacleAvoidance::drawROIs(cv::Mat& frame, const std::vector<dai::SpatialLocations>& spatialData) {
     for (const auto& data : spatialData) {
         auto roi = data.config.roi.denormalize(frame.cols, frame.rows);
         auto coords = data.spatialCoordinates;
@@ -68,9 +68,9 @@ void DisplayManager::drawROIs(cv::Mat& frame, const std::vector<dai::SpatialLoca
 }
 
 
-void DisplayManager::logDistanceGrid() {
-    // Log the distanceGrid (from LogicManager)
-    const auto& distanceGrid = logicManager.getDistanceGrid();
+void ObstacleAvoidance::logDistanceGrid() {
+    // Log the distanceGrid (from MovingLogic)
+    const auto& distanceGrid = MovingLogic.getDistanceGrid();
     std::cout << "[10x10]" << std::endl;
     for (int i = 0; i < 10; i++) {
         std::cout << "[ ";
@@ -82,8 +82,8 @@ void DisplayManager::logDistanceGrid() {
     }
     std::cout << std::endl;
 }
-void DisplayManager::sendDistanceGrid(){
-    const auto& distanceGrid = logicManager.getDistanceGrid();
+void ObstacleAvoidance::sendDistanceGrid(){
+    const auto& distanceGrid = MovingLogic.getDistanceGrid();
     QStringList dataList;
     for (const auto& row : distanceGrid) {
         for (float distance : row) {
@@ -102,7 +102,7 @@ void DisplayManager::sendDistanceGrid(){
 
 }
 
-void DisplayManager::run() {
+void ObstacleAvoidance::run() {
     webSocketClient.connectToServer();
     while (true) {
         processFrame();

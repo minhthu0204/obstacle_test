@@ -7,7 +7,7 @@
 
 #include "depthai/depthai.hpp"
 
-class MovingAvoidance {
+class MovingLogic {
 private:
     static constexpr int GRID_SIZE = 10;
     // Action definitions
@@ -19,7 +19,7 @@ private:
     void resetGrid();
 
 public:
-    LogicManager();
+    MovingLogic();
     void processSpatialData(const std::vector<dai::SpatialLocations>& spatialData, int frameWidth, int frameHeight);
     std::string decideAction() const;
     const std::vector<std::vector<float>>& getDistanceGrid() const;

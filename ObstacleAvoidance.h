@@ -2,7 +2,7 @@
 #define DISPLAY_MANAGER_HPP
 
 #include "PipelineManager.h"
-#include "LogicManager.h"
+#include "MovingAvoidance.h"
 #include "WebSocketClient.h"
 #include <opencv2/opencv.hpp>
 #include <QString>
@@ -10,11 +10,11 @@
 #include <QObject>
 #include <QThread>
 
-class DisplayManager : public QObject {
+class ObstacleAvoidance : public QObject {
     Q_OBJECT
 private:
     PipelineManager pipelineManager;
-    LogicManager logicManager;
+    MovingAvoidance movingAvoidance;
     WebSocketClient webSocketClient;
 
     dai::Device device;
@@ -31,7 +31,7 @@ signals:
     void encodedDataReady(const QByteArray &encodedData);
 
 public:
-    DisplayManager();
+    ObstacleAvoidance();
     void run();
 };
 

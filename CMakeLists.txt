@@ -23,8 +23,8 @@ find_package(depthai CONFIG REQUIRED PATHS /home/xb/depthai-core/build/install/l
 
 add_executable(obstacle_avoidance
   main.cpp
-  DisplayManager.h DisplayManager.cpp
-  MovingAvoidance.h MovingAvoidance.cpp
+  ObstacleAvoidance.h ObstacleAvoidance.cpp
+  MovingLogic.h MovingLogic.cpp
   PipelineManager.h PipelineManager.cpp
   WebSocketClient.h WebSocketClient.cpp
 

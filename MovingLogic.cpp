@@ -1,6 +1,6 @@
-#include "LogicManager.h"
+#include "MovingLogic.h"
 
-LogicManager::LogicManager(): grid(GRID_SIZE, std::vector<int>(GRID_SIZE, 0)),
+MovingLogic::MovingLogic(): grid(GRID_SIZE, std::vector<int>(GRID_SIZE, 0)),
     distanceGrid(GRID_SIZE, std::vector<float>(GRID_SIZE, 0.0f))
 {
 
@@ -8,19 +8,19 @@ LogicManager::LogicManager(): grid(GRID_SIZE, std::vector<int>(GRID_SIZE, 0)),
 
 
 
-void LogicManager::resetGrid() {
+void MovingLogic::resetGrid() {
     for (auto& row : grid) {
         std::fill(row.begin(), row.end(), 0);
     }
 }
 
-void LogicManager::resetDistanceGrid() {
+void MovingLogic::resetDistanceGrid() {
     for (auto& row : distanceGrid) {
         std::fill(row.begin(), row.end(), 0.0f);
     }
 }
 
-void LogicManager::processSpatialData(const std::vector<dai::SpatialLocations>& spatialData, int frameWidth, int frameHeight) {
+void MovingLogic::processSpatialData(const std::vector<dai::SpatialLocations>& spatialData, int frameWidth, int frameHeight) {
     resetGrid();
     for (const auto& data : spatialData) {
         auto coords = data.spatialCoordinates;
@@ -36,7 +36,7 @@ void LogicManager::processSpatialData(const std::vector<dai::SpatialLocations>& 
     }
 }
 
-std::string LogicManager::decideAction() const {
+std::string MovingLogic::decideAction() const {
     // int leftDanger = 0, rightDanger = 0, topDanger = 0, bottomDanger = 0;
     // int leftSafe = 0, rightSafe = 0, topSafe = 0, bottomSafe = 0;
     int centerSum = 0;
@@ -75,6 +75,6 @@ std::string LogicManager::decideAction() const {
 
 }
 
-const std::vector<std::vector<float>>& LogicManager::getDistanceGrid() const {
+const std::vector<std::vector<float>>& MovingLogic::getDistanceGrid() const {
     return distanceGrid;
 }
