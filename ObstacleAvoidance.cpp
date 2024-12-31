@@ -31,12 +31,12 @@ void ObstacleAvoidance::processFrame() {
     cv::applyColorMap(depthFrameColor, depthFrameColor, cv::COLORMAP_HOT);
 
     auto spatialData = spatialCalcQueue->get<dai::SpatialLocationCalculatorData>()->getSpatialLocations();
-    MovingLogic.processSpatialData(spatialData, depthFrameColor.cols, depthFrameColor.rows);
+    movingLogic.processSpatialData(spatialData, depthFrameColor.cols, depthFrameColor.rows);
 
     drawROIs(depthFrameColor, spatialData);
 
     // Display action decision
-    auto action = MovingLogic.decideAction();
+    auto action = movingLogic.decideAction();
     //std::cout << "Action: " << action << std::endl;
     QByteArray dataBuffer = QString::fromStdString(action).toUtf8();
     webSocketClient.sendMessage(dataBuffer);
@@ -69,8 +69,8 @@ void ObstacleAvoidance::drawROIs(cv::Mat& frame, const std::vector<dai::SpatialL
 
 
 void ObstacleAvoidance::logDistanceGrid() {
-    // Log the distanceGrid (from MovingLogic)
-    const auto& distanceGrid = MovingLogic.getDistanceGrid();
+    // Log the distanceGrid (from movingLogic)
+    const auto& distanceGrid = movingLogic.getDistanceGrid();
     std::cout << "[10x10]" << std::endl;
     for (int i = 0; i < 10; i++) {
         std::cout << "[ ";
@@ -83,7 +83,7 @@ void ObstacleAvoidance::logDistanceGrid() {
     std::cout << std::endl;
 }
 void ObstacleAvoidance::sendDistanceGrid(){
-    const auto& distanceGrid = MovingLogic.getDistanceGrid();
+    const auto& distanceGrid = movingLogic.getDistanceGrid();
     QStringList dataList;
     for (const auto& row : distanceGrid) {
         for (float distance : row) {

@@ -14,7 +14,7 @@ class ObstacleAvoidance : public QObject {
     Q_OBJECT
 private:
     PipelineManager pipelineManager;
-    MovingLogic MovingLogic;
+    MovingLogic movingLogic;
     WebSocketClient webSocketClient;
 
     dai::Device device;
