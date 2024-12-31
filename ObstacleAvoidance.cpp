@@ -32,7 +32,7 @@ void ObstacleAvoidance::processFrame() {
     auto spatialData = spatialCalcQueue->get<dai::SpatialLocationCalculatorData>()->getSpatialLocations();
     movingLogic.processSpatialData(spatialData, depthFrameColor.cols, depthFrameColor.rows);
 
-    drawROIs(depthFrameColor, spatialData);
+    //drawROIs(depthFrameColor, spatialData);
 
     // Display action decision
     auto action = movingLogic.decideAction();
@@ -44,7 +44,7 @@ void ObstacleAvoidance::processFrame() {
     logDistanceGrid();
 
     // Show the frame
-    cv::imshow("depth", depthFrameColor);
+    //cv::imshow("depth", depthFrameColor);
 }
 
 void ObstacleAvoidance::drawROIs(cv::Mat& frame, const std::vector<dai::SpatialLocations>& spatialData) {
