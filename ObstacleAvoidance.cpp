@@ -93,8 +93,8 @@ void ObstacleAvoidance::sendDistanceGrid(){
     QString message = QString("788%1").arg(dataString);
     // Gửi thông điệp qua WebSocket
     //qDebug() << message;
-    QByteArray distanceDataBuffer = message.toLocal8Bit();
-    emit distanceGrid(distanceDataBuffer);
+    QByteArray distanceDataBuffer = message.toUtf8();
+    emit distanceDataGrid(distanceDataBuffer);
 
 }
 

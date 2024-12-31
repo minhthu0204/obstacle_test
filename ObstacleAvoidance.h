@@ -28,7 +28,7 @@ private:
 signals:
     void encodedStreamData(const QByteArray &encodedData);
     void movingAction(const QByteArray &movingData);
-    void distanceGrid(const QByteArray &distanceData);
+    void distanceDataGrid(const QByteArray &distanceData);
 
 public:
     ObstacleAvoidance();
