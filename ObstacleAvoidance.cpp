@@ -1,8 +1,7 @@
 #include "ObstacleAvoidance.h"
 
 ObstacleAvoidance::ObstacleAvoidance()
-    : device(pipelineManager.getPipeline()),
-    webSocketClient(QUrl("ws://192.168.1.100:3335")){
+    : device(pipelineManager.getPipeline()){
     device.setIrLaserDotProjectorBrightness(1000);
 
     depthQueue = device.getOutputQueue("depth", 8, false);
@@ -18,7 +17,7 @@ void ObstacleAvoidance::processFrame() {
     auto data = encoded->get<dai::ImgFrame>();
     auto encodedData = data->getData();
     QByteArray byteArray(reinterpret_cast<const char*>(encodedData.data()), encodedData.size());
-    emit encodedDataReady(byteArray);
+    emit encodedStreamData(byteArray);
 
 
 
@@ -38,14 +37,11 @@ void ObstacleAvoidance::processFrame() {
     // Display action decision
     auto action = movingLogic.decideAction();
     //std::cout << "Action: " << action << std::endl;
-    QByteArray dataBuffer = QString::fromStdString(action).toUtf8();
-    webSocketClient.sendMessage(dataBuffer);
+    QByteArray actionDataBuffer = QString::fromStdString(action).toUtf8();
+    emit movingAction(actionDataBuffer);
     sendDistanceGrid();
     // Log the distanceGrid
     logDistanceGrid();
-
-
-
 
     // Show the frame
     cv::imshow("depth", depthFrameColor);
@@ -97,13 +93,12 @@ void ObstacleAvoidance::sendDistanceGrid(){
     QString message = QString("788%1").arg(dataString);
     // Gửi thông điệp qua WebSocket
     //qDebug() << message;
-    QByteArray dataBuffer = message.toUtf8();
-    webSocketClient.sendMessage(dataBuffer);
+    QByteArray distanceDataBuffer = message.toUtf8();
+    emit distanceGrid(distanceDataBuffer);
 
 }
 
 void ObstacleAvoidance::run() {
-    webSocketClient.connectToServer();
     while (true) {
         processFrame();
         if (cv::waitKey(1) == 'q') break;

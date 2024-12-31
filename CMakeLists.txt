@@ -26,7 +26,6 @@ add_executable(obstacle_avoidance
   ObstacleAvoidance.h ObstacleAvoidance.cpp
   MovingLogic.h MovingLogic.cpp
   PipelineManager.h PipelineManager.cpp
-  WebSocketClient.h WebSocketClient.cpp
 
 )
 # Liên kết các thư viện cần thiết

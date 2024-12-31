@@ -3,7 +3,6 @@
 
 #include "PipelineManager.h"
 #include "MovingLogic.h"
-#include "WebSocketClient.h"
 #include <opencv2/opencv.hpp>
 #include <QString>
 #include <QDebug>
@@ -15,7 +14,6 @@ class ObstacleAvoidance : public QObject {
 private:
     PipelineManager pipelineManager;
     MovingLogic movingLogic;
-    WebSocketClient webSocketClient;
 
     dai::Device device;
     std::shared_ptr<dai::DataOutputQueue> depthQueue;
@@ -28,7 +26,9 @@ private:
     void sendDistanceGrid();
 
 signals:
-    void encodedDataReady(const QByteArray &encodedData);
+    void encodedStreamData(const QByteArray &encodedData);
+    void movingAction(const QByteArray &movingData);
+    void distanceGrid(const QByteArray &distanceData);
 
 public:
     ObstacleAvoidance();
