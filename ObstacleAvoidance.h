@@ -2,7 +2,7 @@
 #define DISPLAY_MANAGER_HPP
 
 #include "PipelineManager.h"
-#include "MovingAvoidance.h"
+#include "MovingLogic.h"
 #include "WebSocketClient.h"
 #include <opencv2/opencv.hpp>
 #include <QString>
@@ -14,7 +14,7 @@ class ObstacleAvoidance : public QObject {
     Q_OBJECT
 private:
     PipelineManager pipelineManager;
-    MovingAvoidance movingAvoidance;
+    MovingLogic MovingLogic;
     WebSocketClient webSocketClient;
 
     dai::Device device;
