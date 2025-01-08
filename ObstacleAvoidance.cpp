@@ -1,44 +1,12 @@
 #include "ObstacleAvoidance.h"
 
-ObstacleAvoidance::ObstacleAvoidance() {
-    // Tìm tất cả các thiết bị khả dụng
-    auto deviceInfos = dai::Device::getAllAvailableDevices();
-    if (deviceInfos.empty()) {
-        throw std::runtime_error("No DepthAI device found!");
-    } else {
-        std::cout << "Available devices:" << std::endl;
-        for (size_t i = 0; i < deviceInfos.size(); ++i) {
-            std::cout << "[" << i << "] " << deviceInfos[i].getMxId()
-            << " [" << deviceInfos[i].state << "]" << std::endl;
-        }
+ObstacleAvoidance::ObstacleAvoidance()
+    : device(pipelineManager.getPipeline(),pipelineManager.getDeviceInfo()){
+    device.setIrLaserDotProjectorBrightness(1000);
 
-        dai::DeviceInfo selectedDevice;
-        if (deviceInfos.size() == 1) {
-            selectedDevice = deviceInfos[0];
-        } else {
-            std::cout << "Which DepthAI Device you want to use: ";
-            std::string input;
-            std::cin >> input;
-
-            try {
-                int index = std::stoi(input);
-                if (index < 0 || static_cast<size_t>(index) >= deviceInfos.size()) {
-                    throw std::out_of_range("Index out of range");
-                }
-                selectedDevice = deviceInfos[index];
-            } catch (...) {
-                throw std::invalid_argument("Invalid input for device selection");
-            }
-        }
-
-        // Khởi tạo thiết bị với thiết bị đã chọn
-        device = std::make_unique<dai::Device>(pipelineManager.getPipeline(), selectedDevice);
-    }
-
-    device->setIrLaserDotProjectorBrightness(1000);
-    depthQueue = device->getOutputQueue("depth", 8, false);
-    spatialCalcQueue = device->getOutputQueue("spatialData", 8, false);
-    encoded = device->getOutputQueue("encoded", 30, true);
+    depthQueue = device.getOutputQueue("depth", 8, false);
+    spatialCalcQueue = device.getOutputQueue("spatialData", 8, false);
+    encoded = device.getOutputQueue("encoded", 30, true);
 
 }
 

@@ -86,3 +86,35 @@ void PipelineManager::configureNodes(){
 dai::Pipeline PipelineManager::getPipeline() const {
     return pipeline;
 }
+
+dai::DeviceInfo PipelineManager::getDeviceInfo() {
+    auto deviceInfos = dai::Device::getAllAvailableDevices();
+
+    if (deviceInfos.empty()) {
+        throw std::runtime_error("No DepthAI device found!");
+    }
+
+    std::cout << "Available devices:" << std::endl;
+    for (int i = 0; i < deviceInfos.size(); ++i) {
+        std::cout << "[" << i << "] " << deviceInfos[i].getMxId()
+        << " [" << deviceInfos[i].state.name() << "]" << std::endl;
+    }
+
+    if (deviceInfos.size() == 1) {
+        return deviceInfos[0];
+    } else {
+        std::cout << "Which DepthAI Device you want to use: ";
+        std::string input;
+        std::cin >> input;
+
+        try {
+            int index = std::stoi(input);
+            if (index < 0 || static_cast<int>(index) >= deviceInfos.size()) {
+                throw std::out_of_range("Index out of range");
+            }
+            return deviceInfos[index];
+        } catch (const std::exception& e) {
+            throw std::invalid_argument("Invalid input for device selection: " + input);
+        }
+    }
+}

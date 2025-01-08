@@ -27,6 +27,7 @@ private:
 public:
     PipelineManager();
     dai::Pipeline getPipeline() const;
+    dai::DeviceInfo getDeviceInfo();
 };
 
 #endif
