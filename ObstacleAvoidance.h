@@ -13,7 +13,7 @@ class ObstacleAvoidance : public QObject {
 private:
     PipelineManager pipelineManager;
     MovingLogic movingLogic;
-
+    bool isTurning = true;
 
     std::unique_ptr<dai::Device> device;
 
