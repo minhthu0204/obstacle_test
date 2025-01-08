@@ -91,9 +91,9 @@ dai::Pipeline PipelineManager::getPipeline() const {
     }
 
     std::cout << "Available devices:" << std::endl;
-    for (int i = 0; i < deviceInfos.size(); ++i) {
+    for (size_t i = 0; i < deviceInfos.size(); ++i) {
         std::cout << "[" << i << "] " << deviceInfos[i].getMxId()
-        << " [" << deviceInfos[i].state.name << "]" << std::endl;
+        << " [" << deviceInfos[i].state << "]" << std::endl;
     }
 
     dai::DeviceInfo selectedDevice;
