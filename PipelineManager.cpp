@@ -21,7 +21,7 @@ void PipelineManager::configureNodes(){
     const int FPS = 30;
 
     // Init and configure color camera
-    colorCam->setResolution(dai::ColorCameraProperties::SensorResolution::THE_1080_P);
+    colorCam->setResolution(dai::ColorCameraProperties::SensorResolution::THE_720_P);
     colorCam->setInterleaved(false);
     colorCam->setColorOrder(dai::ColorCameraProperties::ColorOrder::BGR);
     colorCam->setFps(FPS);
@@ -35,7 +35,8 @@ void PipelineManager::configureNodes(){
     videnc->bitstream.link(veOut->input);
 
 
-
+    // bitrate
+    videnc->setBitrateKbps(500); // 0.5 Mbps
 
 
 
@@ -83,5 +84,36 @@ void PipelineManager::configureNodes(){
 }
 
 dai::Pipeline PipelineManager::getPipeline() const {
+    auto deviceInfos = dai::Device::getAllAvailableDevices();
+
+    if (deviceInfos.empty()) {
+        throw std::runtime_error("No DepthAI device found!");
+    }
+
+    std::cout << "Available devices:" << std::endl;
+    for (int i = 0; i < deviceInfos.size(); ++i) {
+        std::cout << "[" << i << "] " << deviceInfos[i].getMxId()
+        << " [" << deviceInfos[i].state.name << "]" << std::endl;
+    }
+
+    dai::DeviceInfo selectedDevice;
+    if (deviceInfos.size() == 1) {
+        selectedDevice = deviceInfos[0];
+    } else {
+        std::cout << "Which DepthAI Device you want to use: ";
+        std::string input;
+        std::cin >> input;
+        try {
+            int index = std::stoi(input);
+            if (index < 0 || index >= static_cast<int>(deviceInfos.size())) {
+                throw std::out_of_range("Invalid device index");
+            }
+            selectedDevice = deviceInfos[index];
+        } catch (...) {
+            throw std::invalid_argument("Invalid input. Please provide a valid device index.");
+        }
+    }
+
+    dai::Device device(selectedDevice, pipeline);
     return pipeline;
 }

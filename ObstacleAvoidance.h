@@ -1,8 +1,8 @@
 #ifndef DISPLAY_MANAGER_HPP
 #define DISPLAY_MANAGER_HPP
-
 #include "PipelineManager.h"
 #include "MovingLogic.h"
+#include <QtConcurrent>
 #include <opencv2/opencv.hpp>
 #include <QString>
 #include <QDebug>
@@ -32,6 +32,10 @@ signals:
 
 public:
     ObstacleAvoidance();
+
+
+
+public slots:
     void run();
 };
 

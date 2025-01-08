@@ -12,14 +12,14 @@ ObstacleAvoidance::ObstacleAvoidance()
 
 void ObstacleAvoidance::processFrame() {
 
-    QThread::msleep(30);
+
 
     auto data = encoded->get<dai::ImgFrame>();
     auto encodedData = data->getData();
     QByteArray byteArray(reinterpret_cast<const char*>(encodedData.data()), encodedData.size());
     emit encodedStreamData(byteArray);
 
-
+    qDebug() << "--> ObstacleAvoidance::processFrame: " << byteArray.size();
 
     auto inDepth = depthQueue->get<dai::ImgFrame>();
     cv::Mat depthFrame = inDepth->getFrame();
@@ -41,7 +41,7 @@ void ObstacleAvoidance::processFrame() {
     emit movingAction(actionDataBuffer);
     sendDistanceGrid();
     // Log the distanceGrid
-    logDistanceGrid();
+    // logDistanceGrid();
 
     // Show the frame
     //cv::imshow("depth", depthFrameColor);
@@ -90,10 +90,10 @@ void ObstacleAvoidance::sendDistanceGrid(){
     QString dataString = dataList.join(';'); // Ghép các giá trị bằng dấu ';'
 
     // Tạo thông điệp theo định dạng <CMD><DATA>
-    QString message = QString("788%1").arg(dataString);
+    // QString message = QString("788%1").arg(dataString);
     // Gửi thông điệp qua WebSocket
     //qDebug() << message;
-    QByteArray distanceDataBuffer = message.toUtf8();
+    QByteArray distanceDataBuffer = dataString.toUtf8();
     emit distanceDataGrid(distanceDataBuffer);
 
 }
@@ -101,6 +101,7 @@ void ObstacleAvoidance::sendDistanceGrid(){
 void ObstacleAvoidance::run() {
     while (true) {
         processFrame();
-        if (cv::waitKey(1) == 'q') break;
+        QThread::msleep(300);
+        // if (cv::waitKey(1) == 'q') break;
     }
 }
