@@ -1,12 +1,12 @@
 #include "ObstacleAvoidance.h"
 
 ObstacleAvoidance::ObstacleAvoidance()
-    : device(pipelineManager.getPipeline(),pipelineManager.getDeviceInfo()){
-    device.setIrLaserDotProjectorBrightness(1000);
-
-    depthQueue = device.getOutputQueue("depth", 8, false);
-    spatialCalcQueue = device.getOutputQueue("spatialData", 8, false);
-    encoded = device.getOutputQueue("encoded", 30, true);
+{
+    device = std::make_unique<dai::Device>(pipelineManager.getPipeline(), pipelineManager.getDeviceInfo());
+    device->setIrLaserDotProjectorBrightness(1000);
+    depthQueue = device->getOutputQueue("depth", 8, false);
+    spatialCalcQueue = device->getOutputQueue("spatialData", 8, false);
+    encoded = device->getOutputQueue("encoded", 30, true);
 
 }
 
@@ -106,10 +106,11 @@ void ObstacleAvoidance::run() {
             qDebug() << "[FATAL ERROR] Device connection lost: " << e.what();
             // Thử kết nối lại
             try {
-                device = dai::Device(pipelineManager.getPipeline(), pipelineManager.getDeviceInfo());
-                depthQueue = device.getOutputQueue("depth", 8, false);
-                spatialCalcQueue = device.getOutputQueue("spatialData", 8, false);
-                encoded = device.getOutputQueue("encoded", 30, true);
+                device = std::make_unique<dai::Device>(pipelineManager.getPipeline(), pipelineManager.getDeviceInfo());
+                device->setIrLaserDotProjectorBrightness(1000);
+                depthQueue = device->getOutputQueue("depth", 8, false);
+                spatialCalcQueue = device->getOutputQueue("spatialData", 8, false);
+                encoded = device->getOutputQueue("encoded", 30, true);
                 qDebug() << "Device reconnected successfully.";
             } catch (const std::runtime_error& reconnectError) {
                 qDebug() << "[ERROR] Failed to reconnect: " << reconnectError.what();
