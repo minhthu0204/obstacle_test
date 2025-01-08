@@ -99,7 +99,7 @@ void ObstacleAvoidance::sendDistanceGrid(){
 }
 
 void ObstacleAvoidance::run() {
-    while (true) {
+    while (isTurning) {
         try {
             processFrame();
         } catch (const std::runtime_error& e) {
@@ -114,13 +114,12 @@ void ObstacleAvoidance::run() {
                 qDebug() << "Device reconnected successfully.";
             } catch (const std::runtime_error& reconnectError) {
                 qDebug() << "[ERROR] Failed to reconnect: " << reconnectError.what();
-
-                break; // Thoát khỏi vòng lặp
-                qDebug() << "break";
+                isTurning = false;
             }
-            qDebug() << "break2";
+
         }
-        qDebug() << "break3";
+
         QThread::msleep(300);
     }
+    qDebug()<< "break";
 }
