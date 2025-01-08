@@ -35,11 +35,11 @@ ObstacleAvoidance::ObstacleAvoidance() {
         device = std::make_unique<dai::Device>(pipelineManager.getPipeline(), selectedDevice);
     }
 
-    device.setIrLaserDotProjectorBrightness(1000);
+    device->setIrLaserDotProjectorBrightness(1000);
+    depthQueue = device->getOutputQueue("depth", 8, false);
+    spatialCalcQueue = device->getOutputQueue("spatialData", 8, false);
+    encoded = device->getOutputQueue("encoded", 30, true);
 
-    depthQueue = device.getOutputQueue("depth", 8, false);
-    spatialCalcQueue = device.getOutputQueue("spatialData", 8, false);
-    encoded = device.getOutputQueue("encoded", 30, true);
 }
 
 void ObstacleAvoidance::processFrame() {
