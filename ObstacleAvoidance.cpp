@@ -118,7 +118,9 @@ void ObstacleAvoidance::run() {
                 break; // Thoát khỏi vòng lặp
                 qDebug() << "break";
             }
+            qDebug() << "break2";
         }
+        qDebug() << "break3";
         QThread::msleep(300);
     }
 }
