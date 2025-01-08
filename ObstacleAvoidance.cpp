@@ -114,7 +114,9 @@ void ObstacleAvoidance::run() {
                 qDebug() << "Device reconnected successfully.";
             } catch (const std::runtime_error& reconnectError) {
                 qDebug() << "[ERROR] Failed to reconnect: " << reconnectError.what();
+
                 break; // Thoát khỏi vòng lặp
+                qDebug() << "break";
             }
         }
         QThread::msleep(300);
