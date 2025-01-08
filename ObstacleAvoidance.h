@@ -14,7 +14,7 @@ private:
     PipelineManager pipelineManager;
     MovingLogic movingLogic;
 
-    std::unique_ptr<dai::Device> device;
+    dai::Device device;
     std::shared_ptr<dai::DataOutputQueue> depthQueue;
     std::shared_ptr<dai::DataOutputQueue> spatialCalcQueue;
     std::shared_ptr<dai::DataOutputQueue> encoded;
