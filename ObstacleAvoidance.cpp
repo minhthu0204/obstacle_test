@@ -99,9 +99,71 @@ void ObstacleAvoidance::sendDistanceGrid(){
 }
 
 void ObstacleAvoidance::run() {
-    while (true) {
-        processFrame();
-        QThread::msleep(300);
-        // if (cv::waitKey(1) == 'q') break;
+
+    Dưới đây là các file được chỉnh sửa đầy đủ với cơ chế xử lý lỗi khi mất kết nối thiết bị:
+
+                                                                                               ObstacleAvoidance.cpp
+                                                                                                   cpp
+                                                                                                       Copy code
+#include "ObstacleAvoidance.h"
+
+                                                                                                       ObstacleAvoidance::ObstacleAvoidance()
+        : device(pipelineManager.getPipeline(), pipelineManager.getDeviceInfo()) {
+        device.setIrLaserDotProjectorBrightness(1000);
+
+        depthQueue = device.getOutputQueue("depth", 8, false);
+        spatialCalcQueue = device.getOutputQueue("spatialData", 8, false);
+        encoded = device.getOutputQueue("encoded", 30, true);
     }
+
+    void ObstacleAvoidance::processFrame() {
+        try {
+            auto data = encoded->get<dai::ImgFrame>();
+            auto encodedData = data->getData();
+            QByteArray byteArray(reinterpret_cast<const char*>(encodedData.data()), encodedData.size());
+            emit encodedStreamData(byteArray);
+
+            qDebug() << "--> ObstacleAvoidance::processFrame: " << byteArray.size();
+
+            auto inDepth = depthQueue->get<dai::ImgFrame>();
+            cv::Mat depthFrame = inDepth->getFrame();
+
+            // Normalize and apply color map
+            cv::Mat depthFrameColor;
+            cv::normalize(depthFrame, depthFrameColor, 0, 255, cv::NORM_MINMAX, CV_8UC1);
+            cv::applyColorMap(depthFrameColor, depthFrameColor, cv::COLORMAP_HOT);
+
+            auto spatialData = spatialCalcQueue->get<dai::SpatialLocationCalculatorData>()->getSpatialLocations();
+            movingLogic.processSpatialData(spatialData, depthFrameColor.cols, depthFrameColor.rows);
+
+            auto action = movingLogic.decideAction();
+            QByteArray actionDataBuffer = QString::fromStdString(action).toUtf8();
+            emit movingAction(actionDataBuffer);
+            sendDistanceGrid();
+        } catch (const std::runtime_error& e) {
+            qDebug() << "[ERROR] " << e.what();
+            emit errorOccurred(QString::fromStdString(e.what()));
+        }
+    }
+
+    void ObstacleAvoidance::run() {
+        while (true) {
+            try {
+                processFrame();
+            } catch (const std::runtime_error& e) {
+                qDebug() << "[FATAL ERROR] Device connection lost: " << e.what();
+                // Thử kết nối lại
+                try {
+                    device = dai::Device(pipelineManager.getPipeline(), pipelineManager.getDeviceInfo());
+                    depthQueue = device.getOutputQueue("depth", 8, false);
+                    spatialCalcQueue = device.getOutputQueue("spatialData", 8, false);
+                    encoded = device.getOutputQueue("encoded", 30, true);
+                    qDebug() << "Device reconnected successfully.";
+                } catch (const std::runtime_error& reconnectError) {
+                    qDebug() << "[ERROR] Failed to reconnect: " << reconnectError.what();
+                    break; // Thoát khỏi vòng lặp
+                }
+            }
+            QThread::msleep(300);
+        }
 }
