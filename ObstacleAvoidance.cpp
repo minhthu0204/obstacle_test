@@ -24,11 +24,8 @@ void ObstacleAvoidance::processFrame() {
     cv::Mat depthFrameColor;
     cv::normalize(depthFrame, depthFrameColor, 0, 255, cv::NORM_MINMAX, CV_8UC1);
     cv::applyColorMap(depthFrameColor, depthFrameColor, cv::COLORMAP_HOT);
-    qDebug() << "--> ObstacleAvoidance::processFrame 1: ";
     auto spatialData = spatialCalcQueue->get<dai::SpatialLocationCalculatorData>()->getSpatialLocations();
-    qDebug() << "--> ObstacleAvoidance::processFrame 2: ";
     movingLogic.processSpatialData(spatialData, depthFrameColor.cols, depthFrameColor.rows);
-    qDebug() << "--> ObstacleAvoidance::processFrame 3: ";
 
     //drawROIs(depthFrameColor, spatialData);
 
@@ -105,25 +102,42 @@ void ObstacleAvoidance::createDevice(){
 }
 
 void ObstacleAvoidance::run() {
-
-    createDevice();
+    try {
+        createDevice(); // Thử tạo thiết bị ban đầu
+    } catch (const std::runtime_error& e) {
+        qDebug() << "[ERROR] Initial device creation failed: " << e.what();
+        isTurning = false;
+    }
 
     while (isTurning) {
         try {
-            processFrame();
+            processFrame(); // Xử lý khung hình nếu thiết bị sẵn sàng
+            retryCount = 0; // Reset số lần thử khi kết nối thành công
         } catch (const std::runtime_error& e) {
             qDebug() << "[FATAL ERROR] Device connection lost: " << e.what();
-            // Thử kết nối lại
+
+            if (++retryCount > maxRetries) { // Nếu vượt quá số lần thử, dừng vòng lặp
+                qDebug() << "[ERROR] Maximum retries reached. Exiting...";
+                isTurning = false;
+                break;
+            }
+
+            qDebug() << "Attempting to reconnect (" << retryCount << "/" << maxRetries << ")...";
+            QThread::msleep(reconnectDelay); // Chờ 0.5 giây trước khi thử lại
+
             try {
-                createDevice();
+                createDevice(); // Thử tái kết nối
                 qDebug() << "Device reconnected successfully.";
             } catch (const std::runtime_error& reconnectError) {
                 qDebug() << "[ERROR] Failed to reconnect: " << reconnectError.what();
-                isTurning = false;
+                if (retryCount == maxRetries) {
+                    qDebug() << "Stopping retries.";
+                    isTurning = false;
+                }
             }
-
         }
 
-        QThread::msleep(300);
+        QThread::msleep(300); // Thời gian chờ giữa các lần xử lý
     }
 }
+

@@ -14,6 +14,9 @@ private:
     PipelineManager pipelineManager;
     MovingLogic movingLogic;
     bool isTurning = true;
+    int retryCount = 0;          // Đếm số lần thử kết nối
+    const int maxRetries = 5;    // Số lần thử kết nối tối đa
+    const int reconnectDelay = 500; // Thời gian chờ giữa các lần tái kết nối (ms)
 
     std::unique_ptr<dai::Device> device;
 
