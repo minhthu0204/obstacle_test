@@ -25,10 +25,12 @@ private:
     void drawROIs(cv::Mat& frame, const std::vector<dai::SpatialLocations>& spatialData);
     void logDistanceGrid();
     void sendDistanceGrid();
+
     void createDevice();
 
+
 signals:
-    void encodedStreamData(const QByteArray &encodedData);
+    void encodedStreamData(QByteArray encodedData);
     void movingAction(const QByteArray &movingData);
     void distanceDataGrid(const QByteArray &distanceData);
 

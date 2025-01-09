@@ -1,8 +1,8 @@
 #include "ObstacleAvoidance.h"
 
 ObstacleAvoidance::ObstacleAvoidance()
+
 {
-    createDevice();
 
 }
 
@@ -24,9 +24,11 @@ void ObstacleAvoidance::processFrame() {
     cv::Mat depthFrameColor;
     cv::normalize(depthFrame, depthFrameColor, 0, 255, cv::NORM_MINMAX, CV_8UC1);
     cv::applyColorMap(depthFrameColor, depthFrameColor, cv::COLORMAP_HOT);
-
+    qDebug() << "--> ObstacleAvoidance::processFrame 1: ";
     auto spatialData = spatialCalcQueue->get<dai::SpatialLocationCalculatorData>()->getSpatialLocations();
+    qDebug() << "--> ObstacleAvoidance::processFrame 2: ";
     movingLogic.processSpatialData(spatialData, depthFrameColor.cols, depthFrameColor.rows);
+    qDebug() << "--> ObstacleAvoidance::processFrame 3: ";
 
     //drawROIs(depthFrameColor, spatialData);
 
@@ -103,6 +105,9 @@ void ObstacleAvoidance::createDevice(){
 }
 
 void ObstacleAvoidance::run() {
+
+    createDevice();
+
     while (isTurning) {
         try {
             processFrame();
@@ -121,5 +126,4 @@ void ObstacleAvoidance::run() {
 
         QThread::msleep(300);
     }
-    qDebug()<< "break";
 }

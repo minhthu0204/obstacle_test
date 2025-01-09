@@ -21,6 +21,9 @@ private:
 
     static constexpr int GRID_SIZE = 10;
 
+    const int FPS = 30;
+
+
 
     void configureNodes();
 
@@ -28,6 +31,7 @@ public:
     PipelineManager();
     dai::Pipeline getPipeline() const;
     dai::DeviceInfo getDeviceInfo();
+
 };
 
 #endif

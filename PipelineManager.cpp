@@ -18,10 +18,10 @@ PipelineManager::PipelineManager()
 
 void PipelineManager::configureNodes(){
     //Color Camera
-    const int FPS = 30;
 
     // Init and configure color camera
     colorCam->setResolution(dai::ColorCameraProperties::SensorResolution::THE_720_P);
+
     colorCam->setInterleaved(false);
     colorCam->setColorOrder(dai::ColorCameraProperties::ColorOrder::BGR);
     colorCam->setFps(FPS);
@@ -37,6 +37,7 @@ void PipelineManager::configureNodes(){
 
     // bitrate
     videnc->setBitrateKbps(500); // 0.5 Mbps
+
 
 
 
@@ -72,7 +73,7 @@ void PipelineManager::configureNodes(){
         for (int j = 0; j < GRID_SIZE; j++) {
             dai::SpatialLocationCalculatorConfigData config;
             config.depthThresholds.lowerThreshold = 200;
-            config.depthThresholds.upperThreshold = 30000;
+            config.depthThresholds.upperThreshold = 40000;
             config.calculationAlgorithm = dai::SpatialLocationCalculatorAlgorithm::MEDIAN;
             config.roi = dai::Rect(
                 dai::Point2f(i * 0.1f, j * 0.1f),
@@ -118,3 +119,4 @@ dai::DeviceInfo PipelineManager::getDeviceInfo() {
         }
     }
 }
+
